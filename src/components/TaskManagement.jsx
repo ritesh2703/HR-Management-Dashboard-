@@ -103,7 +103,7 @@ const TaskManagement = ({ tasks, updateTaskStatus }) => {
                     <TaskColumn
                         title="In Progress"
                         icon={<FiClock />}
-                        color="yellow"
+                        color="orange"
                         tasks={filteredTasks.filter((task) => task.status === 'in-progress')}
                         taskCount={countTasksByStatus('in-progress')}
                         updateTaskStatus={updateTaskStatus}

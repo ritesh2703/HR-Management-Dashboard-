@@ -5,6 +5,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './pages/Dashboard';
 import Tasks from './pages/Tasks';
+import Inbox from './pages/Inbox';
+import Calendar from './pages/Calendar'; // Add this import
 import "./App.css";
 
 const App = () => {
@@ -16,6 +18,8 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tasks" element={<Tasks />} />
+        <Route path="/inbox" element={<Inbox />} />
+        <Route path="/calendar" element={<Calendar />} /> {/* Add this route */}
       </Routes>
     </Router>
   );

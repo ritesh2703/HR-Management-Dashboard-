@@ -8,6 +8,7 @@ import {
   FiCalendar, FiEdit2, FiTrash2, FiCheck, FiClock, FiX 
 } from 'react-icons/fi';
 import Sidebar from '../components/Sidebar';
+import Navbar from '../components/Navbar';
 
 const Tasks = () => {
   const [userData, setUserData] = useState(null);
@@ -48,8 +49,7 @@ const Tasks = () => {
           setUserData(userSnap.data());
         }
 
-        // In a real app, you would fetch tasks from Firestore here
-        // For now, we'll use sample data
+        // Sample tasks data
         const sampleTasks = [
           { 
             id: 1, 
@@ -191,7 +191,14 @@ const Tasks = () => {
       id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1 
     };
     setTasks([...tasks, newTaskWithId]);
-    resetTaskForm();
+    setNewTask({
+      title: '',
+      description: '',
+      status: 'New Requests',
+      priority: 'Medium',
+      dueDate: '',
+      assignee: ''
+    });
     setShowTaskModal(false);
   };
 
@@ -203,17 +210,6 @@ const Tasks = () => {
 
   const deleteTask = (taskId) => {
     setTasks(tasks.filter(task => task.id !== taskId));
-  };
-
-  const resetTaskForm = () => {
-    setNewTask({
-      title: '',
-      description: '',
-      status: 'New Requests',
-      priority: 'Medium',
-      dueDate: '',
-      assignee: ''
-    });
   };
 
   if (isLoading) {
@@ -234,314 +230,320 @@ const Tasks = () => {
       />
       
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-auto">
-        <div className="flex flex-col h-full">
-          {/* Header with controls */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 p-4 bg-white rounded-lg shadow-sm">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
-              Task Management
-              {userData?.department && (
-                <span className="text-sm font-normal text-gray-500 ml-2">
-                  ({userData.department})
-                </span>
-              )}
-            </h2>
-            
-            <div className="flex flex-col md:flex-row w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-              {/* Search bar */}
-              <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search tasks..."
-                  className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+      <div className="flex-1 flex flex-col">
+        {/* Navbar */}
+        <Navbar />
+        
+        {/* Task Management Content */}
+        <div className="p-8 overflow-auto flex-1">
+          <div className="flex flex-col h-full">
+            {/* Header with controls */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 p-4 bg-white rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+                Task Management
+                {userData?.department && (
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    ({userData.department})
+                  </span>
+                )}
+              </h2>
+              
+              <div className="flex flex-col md:flex-row w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                {/* Search bar */}
+                <div className="relative">
+                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search tasks..."
+                    className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                
+                {/* Date filter */}
+                <div className="relative">
+                  <FiCalendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="date"
+                    className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Controls row */}
+            <div className="flex justify-between items-center mb-4">
+              {/* View mode toggle */}
+              <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
+                <button 
+                  onClick={() => setViewMode('table')}
+                  className={`p-2 rounded-md ${viewMode === 'table' ? 'bg-white shadow-sm' : ''}`}
+                  title="Table View"
+                >
+                  <FiList />
+                </button>
+                <button 
+                  onClick={() => setViewMode('kanban')}
+                  className={`p-2 rounded-md ${viewMode === 'kanban' ? 'bg-white shadow-sm' : ''}`}
+                  title="Kanban View"
+                >
+                  <FiColumns />
+                </button>
+                <button 
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
+                  title="List View"
+                >
+                  <FiGrid />
+                </button>
               </div>
               
-              {/* Date filter */}
-              <div className="relative">
-                <FiCalendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="date"
-                  className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                  value={filterDate}
-                  onChange={(e) => setFilterDate(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Controls row */}
-          <div className="flex justify-between items-center mb-4">
-            {/* View mode toggle */}
-            <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
-              <button 
-                onClick={() => setViewMode('table')}
-                className={`p-2 rounded-md ${viewMode === 'table' ? 'bg-white shadow-sm' : ''}`}
-                title="Table View"
+              {/* Add task button */}
+              <button
+                onClick={() => setShowTaskModal(true)}
+                className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
-                <FiList />
-              </button>
-              <button 
-                onClick={() => setViewMode('kanban')}
-                className={`p-2 rounded-md ${viewMode === 'kanban' ? 'bg-white shadow-sm' : ''}`}
-                title="Kanban View"
-              >
-                <FiColumns />
-              </button>
-              <button 
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-white shadow-sm' : ''}`}
-                title="List View"
-              >
-                <FiGrid />
+                <FiPlus className="mr-2" /> New Task
               </button>
             </div>
             
-            {/* Add task button */}
-            <button
-              onClick={() => setShowTaskModal(true)}
-              className="flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <FiPlus className="mr-2" /> New Task
-            </button>
-          </div>
-          
-          {/* Task display area */}
-          <div className="flex-1 overflow-auto bg-white rounded-lg shadow-sm p-4">
-            {viewMode === 'table' && (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredTasks.length > 0 ? (
-                      filteredTasks.map(task => (
-                        <tr key={task.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{task.title}</td>
-                          <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{task.description}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                              ${task.status === 'New Requests' ? 'bg-blue-100 text-blue-800' : 
-                                task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-green-100 text-green-800'}`}>
-                              {task.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                              ${task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                                task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                                'bg-green-100 text-green-800'}`}>
-                              {task.priority}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.dueDate}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.assignee}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex space-x-2">
-                              <button 
-                                onClick={() => updateTaskStatus(task.id, 'In Progress')}
-                                className="text-yellow-600 hover:text-yellow-900 disabled:text-gray-400"
-                                disabled={task.status === 'In Progress'}
-                                title="Start Task"
-                              >
-                                <FiClock />
-                              </button>
-                              <button 
-                                onClick={() => updateTaskStatus(task.id, 'Completed')}
-                                className="text-green-600 hover:text-green-900 disabled:text-gray-400"
-                                disabled={task.status === 'Completed'}
-                                title="Complete Task"
-                              >
-                                <FiCheck />
-                              </button>
-                              <button 
-                                onClick={() => deleteTask(task.id)}
-                                className="text-red-600 hover:text-red-900"
-                                title="Delete Task"
-                              >
-                                <FiTrash2 />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
+            {/* Task display area */}
+            <div className="flex-1 overflow-auto bg-white rounded-lg shadow-sm p-4">
+              {viewMode === 'table' && (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">
-                          No tasks found. Create a new task to get started!
-                        </td>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            
-            {viewMode === 'kanban' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {Object.entries(groupedTasks).map(([status, tasks]) => (
-                  <div key={status} className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="font-semibold text-lg mb-4 flex items-center">
-                      <span className={`w-3 h-3 rounded-full mr-2 
-                        ${status === 'New Requests' ? 'bg-blue-500' : 
-                          status === 'In Progress' ? 'bg-yellow-500' : 
-                          'bg-green-500'}`}></span>
-                      {status} <span className="ml-1 text-gray-500">({tasks.length})</span>
-                    </h3>
-                    <div className="space-y-3">
-                      {tasks.length > 0 ? (
-                        tasks.map(task => (
-                          <div key={task.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h4 className="font-medium text-gray-900">{task.title}</h4>
-                                <p className="text-sm text-gray-500 mt-1">{task.description}</p>
-                              </div>
-                              <div className="flex space-x-1">
-                                <button 
-                                  onClick={() => deleteTask(task.id)}
-                                  className="text-gray-400 hover:text-red-500"
-                                  title="Delete Task"
-                                >
-                                  <FiTrash2 size={16} />
-                                </button>
-                              </div>
-                            </div>
-                            <div className="mt-3 flex justify-between items-center">
-                              <span className={`text-xs px-2 py-1 rounded 
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredTasks.length > 0 ? (
+                        filteredTasks.map(task => (
+                          <tr key={task.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{task.title}</td>
+                            <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{task.description}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${task.status === 'New Requests' ? 'bg-blue-100 text-blue-800' : 
+                                  task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
+                                  'bg-green-100 text-green-800'}`}>
+                                {task.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 ${task.priority === 'High' ? 'bg-red-100 text-red-800' : 
                                   task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
                                   'bg-green-100 text-green-800'}`}>
                                 {task.priority}
                               </span>
-                              <span className="text-xs text-gray-500">{task.dueDate}</span>
-                            </div>
-                            <div className="mt-2 text-xs text-gray-500">Assignee: {task.assignee}</div>
-                            <div className="mt-3 flex justify-between">
-                              {status !== 'New Requests' && (
-                                <button 
-                                  onClick={() => updateTaskStatus(task.id, 'New Requests')}
-                                  className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
-                                >
-                                  Reset
-                                </button>
-                              )}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.dueDate}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.assignee}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <div className="flex space-x-2">
-                                {status !== 'In Progress' && (
-                                  <button 
-                                    onClick={() => updateTaskStatus(task.id, 'In Progress')}
-                                    className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 transition-colors"
-                                  >
-                                    Start
-                                  </button>
-                                )}
-                                {status !== 'Completed' && (
-                                  <button 
-                                    onClick={() => updateTaskStatus(task.id, 'Completed')}
-                                    className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 transition-colors"
-                                  >
-                                    Complete
-                                  </button>
-                                )}
+                                <button 
+                                  onClick={() => updateTaskStatus(task.id, 'In Progress')}
+                                  className="text-yellow-600 hover:text-yellow-900 disabled:text-gray-400"
+                                  disabled={task.status === 'In Progress'}
+                                  title="Start Task"
+                                >
+                                  <FiClock />
+                                </button>
+                                <button 
+                                  onClick={() => updateTaskStatus(task.id, 'Completed')}
+                                  className="text-green-600 hover:text-green-900 disabled:text-gray-400"
+                                  disabled={task.status === 'Completed'}
+                                  title="Complete Task"
+                                >
+                                  <FiCheck />
+                                </button>
+                                <button 
+                                  onClick={() => deleteTask(task.id)}
+                                  className="text-red-600 hover:text-red-900"
+                                  title="Delete Task"
+                                >
+                                  <FiTrash2 />
+                                </button>
                               </div>
-                            </div>
-                          </div>
+                            </td>
+                          </tr>
                         ))
                       ) : (
-                        <div className="text-center text-sm text-gray-500 py-4">
-                          No tasks in this status
-                        </div>
+                        <tr>
+                          <td colSpan="7" className="px-6 py-4 text-center text-sm text-gray-500">
+                            No tasks found. Create a new task to get started!
+                          </td>
+                        </tr>
                       )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              
+              {viewMode === 'kanban' && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {Object.entries(groupedTasks).map(([status, tasks]) => (
+                    <div key={status} className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="font-semibold text-lg mb-4 flex items-center">
+                        <span className={`w-3 h-3 rounded-full mr-2 
+                          ${status === 'New Requests' ? 'bg-blue-500' : 
+                            status === 'In Progress' ? 'bg-yellow-500' : 
+                            'bg-green-500'}`}></span>
+                        {status} <span className="ml-1 text-gray-500">({tasks.length})</span>
+                      </h3>
+                      <div className="space-y-3">
+                        {tasks.length > 0 ? (
+                          tasks.map(task => (
+                            <div key={task.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <h4 className="font-medium text-gray-900">{task.title}</h4>
+                                  <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+                                </div>
+                                <div className="flex space-x-1">
+                                  <button 
+                                    onClick={() => deleteTask(task.id)}
+                                    className="text-gray-400 hover:text-red-500"
+                                    title="Delete Task"
+                                  >
+                                    <FiTrash2 size={16} />
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex justify-between items-center">
+                                <span className={`text-xs px-2 py-1 rounded 
+                                  ${task.priority === 'High' ? 'bg-red-100 text-red-800' : 
+                                    task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
+                                    'bg-green-100 text-green-800'}`}>
+                                  {task.priority}
+                                </span>
+                                <span className="text-xs text-gray-500">{task.dueDate}</span>
+                              </div>
+                              <div className="mt-2 text-xs text-gray-500">Assignee: {task.assignee}</div>
+                              <div className="mt-3 flex justify-between">
+                                {status !== 'New Requests' && (
+                                  <button 
+                                    onClick={() => updateTaskStatus(task.id, 'New Requests')}
+                                    className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                                  >
+                                    Reset
+                                  </button>
+                                )}
+                                <div className="flex space-x-2">
+                                  {status !== 'In Progress' && (
+                                    <button 
+                                      onClick={() => updateTaskStatus(task.id, 'In Progress')}
+                                      className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 transition-colors"
+                                    >
+                                      Start
+                                    </button>
+                                  )}
+                                  {status !== 'Completed' && (
+                                    <button 
+                                      onClick={() => updateTaskStatus(task.id, 'Completed')}
+                                      className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 transition-colors"
+                                    >
+                                      Complete
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center text-sm text-gray-500 py-4">
+                            No tasks in this status
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {viewMode === 'list' && (
-              <div className="space-y-3">
-                {filteredTasks.length > 0 ? (
-                  filteredTasks.map(task => (
-                    <div key={task.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-medium text-gray-900">{task.title}</h4>
-                          <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+                  ))}
+                </div>
+              )}
+              
+              {viewMode === 'list' && (
+                <div className="space-y-3">
+                  {filteredTasks.length > 0 ? (
+                    filteredTasks.map(task => (
+                      <div key={task.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h4 className="font-medium text-gray-900">{task.title}</h4>
+                            <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className={`text-xs px-2 py-1 rounded 
+                              ${task.status === 'New Requests' ? 'bg-blue-100 text-blue-800' : 
+                                task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
+                                'bg-green-100 text-green-800'}`}>
+                              {task.status}
+                            </span>
+                            <button 
+                              onClick={() => deleteTask(task.id)}
+                              className="text-gray-400 hover:text-red-500"
+                              title="Delete Task"
+                            >
+                              <FiTrash2 size={16} />
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="mt-3 flex justify-between items-center">
                           <span className={`text-xs px-2 py-1 rounded 
-                            ${task.status === 'New Requests' ? 'bg-blue-100 text-blue-800' : 
-                              task.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
+                            ${task.priority === 'High' ? 'bg-red-100 text-red-800' : 
+                              task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
                               'bg-green-100 text-green-800'}`}>
-                            {task.status}
+                            {task.priority}
                           </span>
-                          <button 
-                            onClick={() => deleteTask(task.id)}
-                            className="text-gray-400 hover:text-red-500"
-                            title="Delete Task"
-                          >
-                            <FiTrash2 size={16} />
-                          </button>
+                          <span className="text-xs text-gray-500">Due: {task.dueDate}</span>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">Assignee: {task.assignee}</div>
+                        <div className="mt-3 flex space-x-2">
+                          {task.status !== 'New Requests' && (
+                            <button 
+                              onClick={() => updateTaskStatus(task.id, 'New Requests')}
+                              className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
+                            >
+                              Reset
+                            </button>
+                          )}
+                          {task.status !== 'In Progress' && (
+                            <button 
+                              onClick={() => updateTaskStatus(task.id, 'In Progress')}
+                              className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 transition-colors"
+                            >
+                              Start
+                            </button>
+                          )}
+                          {task.status !== 'Completed' && (
+                            <button 
+                              onClick={() => updateTaskStatus(task.id, 'Completed')}
+                              className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 transition-colors"
+                            >
+                              Complete
+                            </button>
+                          )}
                         </div>
                       </div>
-                      <div className="mt-3 flex justify-between items-center">
-                        <span className={`text-xs px-2 py-1 rounded 
-                          ${task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                            task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                            'bg-green-100 text-green-800'}`}>
-                          {task.priority}
-                        </span>
-                        <span className="text-xs text-gray-500">Due: {task.dueDate}</span>
-                      </div>
-                      <div className="mt-2 text-xs text-gray-500">Assignee: {task.assignee}</div>
-                      <div className="mt-3 flex space-x-2">
-                        {task.status !== 'New Requests' && (
-                          <button 
-                            onClick={() => updateTaskStatus(task.id, 'New Requests')}
-                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
-                          >
-                            Reset
-                          </button>
-                        )}
-                        {task.status !== 'In Progress' && (
-                          <button 
-                            onClick={() => updateTaskStatus(task.id, 'In Progress')}
-                            className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200 transition-colors"
-                          >
-                            Start
-                          </button>
-                        )}
-                        {task.status !== 'Completed' && (
-                          <button 
-                            onClick={() => updateTaskStatus(task.id, 'Completed')}
-                            className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 transition-colors"
-                          >
-                            Complete
-                          </button>
-                        )}
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-sm text-gray-500 py-8">
+                      No tasks found. Create a new task to get started!
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center text-sm text-gray-500 py-8">
-                    No tasks found. Create a new task to get started!
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

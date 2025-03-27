@@ -6,7 +6,8 @@ import Register from './components/Register';
 import Dashboard from './pages/Dashboard';
 import Tasks from './pages/Tasks';
 import Inbox from './pages/Inbox';
-import Calendar from './pages/Calendar'; // Add this import
+import Calendar from './pages/Calendar';
+import Employees from './pages/Employees';
 import "./App.css";
 
 const App = () => {
@@ -19,7 +20,8 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/inbox" element={<Inbox />} />
-        <Route path="/calendar" element={<Calendar />} /> {/* Add this route */}
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/employees" element={<Employees />} />
       </Routes>
     </Router>
   );

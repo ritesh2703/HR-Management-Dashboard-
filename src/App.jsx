@@ -8,6 +8,7 @@ import Tasks from './pages/Tasks';
 import Inbox from './pages/Inbox';
 import Calendar from './pages/Calendar';
 import Employees from './pages/Employees';
+import Projects from './pages/Projects'; // Add this import
 import "./App.css";
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/inbox" element={<Inbox />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/employees" element={<Employees />} />
+        <Route path="/projects" element={<Projects />} /> {/* Add this route */}
       </Routes>
     </Router>
   );

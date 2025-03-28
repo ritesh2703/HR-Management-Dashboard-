@@ -57,7 +57,7 @@ const Calendar = () => {
       
       try {
         const response = await fetch(
-          `https://calendarific.com/api/v2/holidays?api_key=cXDbYg3T2XzdVEEG5vY8oX0s4NitT39F&country=${country}&year=${currentYear}`
+          `https://calendarific.com/api/v2/holidays?api_key=ldyQy15cZA3z12xU633ZBLkiTHgPrQKf&country=${country}&year=${currentYear}`
         );
         const data = await response.json();
         

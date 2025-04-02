@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
@@ -8,7 +7,10 @@ import Tasks from './pages/Tasks';
 import Inbox from './pages/Inbox';
 import Calendar from './pages/Calendar';
 import Employees from './pages/Employees';
-import Projects from './pages/Projects'; // Add this import
+import Projects from './pages/Projects';
+import Attendance from './pages/Attendance';
+import Hiring from './pages/Hiring';
+import Payroll from './pages/Payroll';
 import "./App.css";
 
 const App = () => {
@@ -23,7 +25,10 @@ const App = () => {
         <Route path="/inbox" element={<Inbox />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/employees" element={<Employees />} />
-        <Route path="/projects" element={<Projects />} /> {/* Add this route */}
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/attendance" element={<Attendance />} />
+        <Route path="/hiring" element={<Hiring />} />
+        <Route path="/payroll" element={<Payroll />} />
       </Routes>
     </Router>
   );

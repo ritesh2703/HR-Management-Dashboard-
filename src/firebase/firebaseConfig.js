@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDwGqfOJ1i-z0pYSz_TQw6kcZ9tGQkspQ4",
   authDomain: "hr-management-f4891.firebaseapp.com",
   projectId: "hr-management-f4891",
-  storageBucket: "hr-management-f4891.appspot.com", // ✅ Corrected here
+  storageBucket: "hr-management-f4891.appspot.com",
   messagingSenderId: "951614092840",
   appId: "1:951614092840:web:f1318720f2852e6214a71d",
   measurementId: "G-MJXSJLKP21"
@@ -17,9 +17,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = initializeAuth(app, {
-  persistence: indexedDBLocalPersistence // ✅ Recommended for better session handling
+  persistence: indexedDBLocalPersistence
 });
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { auth, db, storage };
+export { auth, db, storage, analytics };

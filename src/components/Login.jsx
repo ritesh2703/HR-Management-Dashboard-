@@ -2,32 +2,34 @@ import React, { useState } from 'react';
 import { auth } from "../firebase/firebaseConfig";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { FiLock, FiMail } from 'react-icons/fi'; // Icons for UI enhancement
+import { FiLock, FiMail } from 'react-icons/fi';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [showResetForm, setShowResetForm] = useState(false); // Toggle reset form
+    const [showResetForm, setShowResetForm] = useState(false);
     const navigate = useNavigate();
 
-    // 🔒 Handle Login
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            navigate('/dashboard');
+            navigate('/'); // App.jsx will handle redirection based on role
         } catch (error) {
-            setError("Invalid email or password. Please try again.");
+            if (error.code === 'auth/invalid-credential') {
+                setError('Invalid email or password. Please try again.');
+            } else {
+                setError(error.message);
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    // 🔐 Handle Password Reset
     const handleForgotPassword = async () => {
         if (!email) {
             setError("Please enter your email to reset your password.");
@@ -43,19 +45,18 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">            <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
+            <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
                 <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">
                     Welcome Back 👋
                 </h2>
 
-                {/* Error Message */}
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                         {error}
                     </div>
                 )}
 
-                {/* Main Form */}
                 {!showResetForm ? (
                     <form onSubmit={handleLogin}>
                         <div className="mb-4">
@@ -104,7 +105,6 @@ const Login = () => {
                         </p>
                     </form>
                 ) : (
-                    // 🔄 Forgot Password Form
                     <div>
                         <p className="text-gray-600 mb-4">
                             Enter your email to receive a password reset link.

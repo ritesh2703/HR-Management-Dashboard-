@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { auth, db } from '../firebase/firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { setDoc, doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +17,6 @@ const Register = () => {
 
     const navigate = useNavigate();
 
-    // Image Preview Handler with Validation
     const handleImageChange = (e) => {
         const file = e.target.files[0];
 
@@ -28,14 +27,12 @@ const Register = () => {
             }
 
             setProfileImage(file);
-
             const reader = new FileReader();
             reader.onload = () => setImagePreview(reader.result);
             reader.readAsDataURL(file);
         }
     };
 
-    // Cloudinary Upload Function
     const uploadImageToCloudinary = async (image) => {
         const formData = new FormData();
         formData.append("file", image);
@@ -46,9 +43,8 @@ const Register = () => {
             formData
         );
     
-        return response.data.secure_url; // Return uploaded image URL
+        return response.data.secure_url;
     };
-    
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -60,21 +56,20 @@ const Register = () => {
             const userId = userCredential.user.uid;
 
             let profileImageURL = '';
-
             if (profileImage) {
                 profileImageURL = await uploadImageToCloudinary(profileImage);
             }
 
-            // Save user data in Firestore
             await setDoc(doc(db, "users", userId), {
                 fullName,
                 email,
                 role,
-                profileImage: profileImageURL
+                profileImage: profileImageURL,
+                createdAt: new Date()
             });
 
             alert('Registration Successful!');
-            navigate('/dashboard');
+            navigate('/');
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
                 setError('This email is already registered. Please log in instead.');
@@ -89,7 +84,8 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">Register</h2>
 
                 {error && (
@@ -129,6 +125,7 @@ const Register = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             className="w-full p-3 border rounded-lg focus:ring focus:ring-blue-400"
                             required
+                            minLength="6"
                         />
                     </div>
 

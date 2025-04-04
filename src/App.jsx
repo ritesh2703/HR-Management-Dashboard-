@@ -14,8 +14,8 @@ import Employees from './pages/Employees';
 import Projects from './pages/Projects';
 import Attendance from './pages/Attendance';
 import Hiring from './pages/Hiring';
-import Payroll from './pages/Payroll';
 import "./App.css";
+import PayrollPage from './pages/PayrollPage';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -89,7 +89,7 @@ const App = () => {
             <Route path="/projects" element={<Projects />} />
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/hiring" element={<Hiring />} />
-            <Route path="/payroll" element={<Payroll />} />
+            <Route path="/payroll" element={<PayrollPage />} />
           </>
         )}
         

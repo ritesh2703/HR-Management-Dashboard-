@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   FiDollarSign, 
   FiUsers, 
@@ -9,10 +9,10 @@ import {
   FiBarChart2,
   FiBell,
   FiDownload,
-  FiFileText
+  FiFileText,
+  FiX
 } from 'react-icons/fi';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
-
 
 const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
   // Calculate stats based on employee data
@@ -23,6 +23,10 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
   const pendingPayPercentage = 25; // Example value
   const taxCompletionPercentage = 68; // Example value
 
+  // State for announcement popup
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+
   // Expense breakdown data for pie chart
   const expenseData = [
     { name: 'Base Salary', value: 320000, color: '#3B82F6' },
@@ -32,12 +36,20 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
 
   // Data for bar chart
   const monthlyExpenseData = [
-    { name: 'Jan', base: 300000, overtime: 50000, bonus: 20000 },
-    { name: 'Feb', base: 310000, overtime: 60000, bonus: 22000 },
+    { name: 'Apr', base: 320000, overtime: 75000, bonus: 25000 },
     { name: 'Mar', base: 320000, overtime: 70000, bonus: 25000 },
-    { name: 'Apr', base: 320000, overtime: 75000, bonus: 25000 }
+    { name: 'Feb', base: 310000, overtime: 60000, bonus: 22000 },
+    { name: 'Jan', base: 300000, overtime: 50000, bonus: 20000 },
+    { name: 'Dec', base: 290000, overtime: 48000, bonus: 18000 },
+    { name: 'Nov', base: 280000, overtime: 46000, bonus: 16000 },
+    { name: 'Oct', base: 275000, overtime: 45000, bonus: 15000 },
+    { name: 'Sep', base: 270000, overtime: 43000, bonus: 14000 },
+    { name: 'Aug', base: 265000, overtime: 42000, bonus: 13000 },
+    { name: 'Jul', base: 260000, overtime: 40000, bonus: 12000 },
+    { name: 'Jun', base: 255000, overtime: 39000, bonus: 11000 },
+    { name: 'May', base: 250000, overtime: 37000, bonus: 10000 }
   ];
-
+  
   // Announcements data
   const announcements = [
     {
@@ -58,15 +70,10 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
     }
   ];
 
-  
-
-  // Quick actions
-  const quickActions = [
-    { title: "Process Payroll", icon: <FiDollarSign className="text-blue-600" />, color: "blue" },
-    { title: "Generate Payslips", icon: <FiFileText className="text-green-600" />, color: "green" },
-    { title: "Add Employee", icon: <FiUsers className="text-purple-600" />, color: "purple" },
-    { title: "Export Reports", icon: <FiDownload className="text-yellow-600" />, color: "yellow" }
-  ];
+  const handleAnnouncementClick = (announcement) => {
+    setSelectedAnnouncement(announcement);
+    setShowAnnouncementModal(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -173,31 +180,10 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      {/* <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {quickActions.map((action, index) => (
-            <button 
-              key={index}
-              className={`p-4 rounded-lg flex flex-col items-center transition-all hover:scale-105 ${
-                action.color === 'blue' ? 'bg-blue-50 hover:bg-blue-100' :
-                action.color === 'green' ? 'bg-green-50 hover:bg-green-100' :
-                action.color === 'purple' ? 'bg-purple-50 hover:bg-purple-100' :
-                'bg-yellow-50 hover:bg-yellow-100'
-              }`}
-            >
-              <div className="text-2xl mb-2">{action.icon}</div>
-              <span className="font-medium text-gray-700">{action.title}</span>
-            </button>
-          ))}
-        </div>
-      </div> */}
-
       {/* Charts and Announcements Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Payroll Expenses Pie Chart */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-1">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <FiPieChart className="mr-2 text-blue-600" />
             Payroll Expenses Breakdown
@@ -231,8 +217,9 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
           </div>
         </div>
 
-        {/* Announcements Section */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-1">
+        {/* Announcements Icons */}
+       {/* Announcements Section */}
+       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-1">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <FiBell className="mr-2 text-purple-600" />
             Announcements
@@ -274,7 +261,7 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
         </div>
 
         {/* Monthly Expenses Bar Chart */}
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-1">
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-3">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <FiBarChart2 className="mr-2 text-blue-600" />
             Monthly Payroll Trend
@@ -298,7 +285,6 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
       </div>
 
       {/* Payroll Activities Table */}
-      
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
         <h2 className="text-lg font-semibold mb-4">Recent Payroll Activities</h2>
         <table className="min-w-full divide-y divide-gray-200">
@@ -339,6 +325,49 @@ const Dashboard = ({ payrollStats, payrollRecords, employees = [] }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Announcement Modal */}
+      {showAnnouncementModal && selectedAnnouncement && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative">
+            <button 
+              onClick={() => setShowAnnouncementModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+              <FiX className="text-xl" />
+            </button>
+            
+            <div className="flex items-start mb-4">
+              <div className="mt-1 mr-4">
+                {selectedAnnouncement.icon}
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">{selectedAnnouncement.title}</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {new Date(selectedAnnouncement.date).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-gray-700">{selectedAnnouncement.message}</p>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <button 
+                onClick={() => setShowAnnouncementModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
